@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
+<blueprint xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <cm:property-placeholder persistent-id="camel.splunk.httpec.inbound">
         <cm:default-properties>
@@ -9,20 +9,22 @@
             <cm:property name="splunk.source" value=""/>
             <cm:property name="splunk.sourcetype" value=""/>
             <cm:property name="splunk.index" value=""/>
-            <cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
+            <!-- cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/ -->
+            <cm:property name="splunk.authorizationToken" value="C0925622-B1B3-4F37-812B-E5689E4BBE79"/>
             <cm:property name="camel.vm.name.in" value="audit-disqualified"/>
             <cm:property name="camel.route.id" value="Audit Disqualified Message"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="splunkMessageBuilder" class="com.pronoia.camel.splunk.builder.SplunkMessageBuilder" >
+    <bean id="splunkEventBuilder" class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
         <property name="index" value="${splunk.index}"/>
         <property name="source" value="${splunk.source}"/>
         <property name="sourceType" value="${splunk.sourcetype}"/>
     </bean>
 
-    <bean id="splunkHECRouteBuilder" class="com.pronoia.camel.splunk.routes.SplunkHECRouteBuilder">
-        <property name="splunkMessageBuilder" ref="splunkMessageBuilder"/>
+    <bean id="splunkHECRouteBuilder"
+          class="com.pronoia.camel.splunk.httpec.DirectVmToSplunkHttpEventCollectorRouteBuilder">
+        <property name="splunkEventBuilder" ref="splunkEventBuilder"/>
     </bean>
 
     <camelContext id="audit-to-splunk-inbound" xmlns="http://camel.apache.org/schema/blueprint">
