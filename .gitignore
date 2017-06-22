@@ -1,12 +1,18 @@
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
+# Binary / Package files #
+*.class
+*.jar
+*.war
+*.ear
+*.rar
 
-# Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
-!/.mvn/wrapper/maven-wrapper.jar
+# Maven build directory #
+target/
+
+# Eclipse Core #
+.project
+.classpath
+.settings
+
+# IntelliJ #
+.idea/
+*.iml
