@@ -7,7 +7,7 @@
             <cm:property name="splunk.host" value="localhost"/>
             <cm:property name="splunk.port" value="8088"/>
             <cm:property name="splunk.source" value=""/>
-            <cm:property name="splunk.sourcetype" value="camel:hec2"/>
+            <cm:property name="splunk.sourcetype" value=""/>
             <cm:property name="splunk.index" value=""/>
             <cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
             <cm:property name="camel.vm.name.in" value="audit-disqualified"/>
@@ -15,13 +15,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="simpleEventCollector" class="com.pronoia.splunk.eventcollector.client.SimpleEventCollectorClient" init-method="disableCertificateValidation">
-        <property name="host" value="${splunk.host}"/>
-        <property name="port" value="${splunk.port}"/>
-        <property name="authorizationToken" value="${splunk.authorizationToken}"/>
-    </bean>
-
-    <bean id="splunkMessageBuilder" class="com.pronoia.camel.splunk.builder.SplunkMessageBuilder">
+    <bean id="splunkMessageBuilder" class="com.pronoia.camel.splunk.builder.SplunkMessageBuilder" >
         <property name="index" value="${splunk.index}"/>
         <property name="source" value="${splunk.source}"/>
         <property name="sourceType" value="${splunk.sourcetype}"/>
@@ -29,7 +23,6 @@
 
     <bean id="splunkHECRouteBuilder" class="com.pronoia.camel.splunk.routes.SplunkHECRouteBuilder">
         <property name="splunkMessageBuilder" ref="splunkMessageBuilder"/>
-        <property name="simpleEventCollectorClient" ref="simpleEventCollector"/>
     </bean>
 
     <camelContext id="audit-to-splunk-inbound" xmlns="http://camel.apache.org/schema/blueprint">

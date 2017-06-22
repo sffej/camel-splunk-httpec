@@ -2,6 +2,7 @@ package com.pronoia.camel.splunk.routes;
 
 import com.pronoia.camel.splunk.builder.SplunkMessageBuilder;
 import com.pronoia.splunk.eventcollector.client.SimpleEventCollectorClient;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 
 /**
@@ -10,7 +11,6 @@ import org.apache.camel.builder.RouteBuilder;
 public class SplunkHECRouteBuilder  extends RouteBuilder {
 
     SplunkMessageBuilder splunkMessageBuilder;
-    SimpleEventCollectorClient simpleEventCollectorClient;
 
     @Override
     public void configure() throws Exception {
@@ -18,7 +18,9 @@ public class SplunkHECRouteBuilder  extends RouteBuilder {
 
         from( "direct-vm://{{camel.vm.name.in}}" ).routeId( "{{camel.route.id}}" )
                 .to("bean:splunkMessageBuilder?method=builder")
-                .to("bean:simpleEventCollector?method=sendEvent");
+                .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST))
+                .setHeader("Authorization",constant("Splunk {{splunk.authorizationToken}}"))
+                .to("http4://{{splunk.host}}:{{splunk.port}}/services/collector");
         //@formatter:on
     }
 
@@ -30,11 +32,4 @@ public class SplunkHECRouteBuilder  extends RouteBuilder {
         this.splunkMessageBuilder = splunkMessageBuilder;
     }
 
-    public SimpleEventCollectorClient getSimpleEventCollectorClient() {
-        return simpleEventCollectorClient;
-    }
-
-    public void setSimpleEventCollectorClient(SimpleEventCollectorClient simpleEventCollectorClient) {
-        this.simpleEventCollectorClient = simpleEventCollectorClient;
-    }
 }
