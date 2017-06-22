@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
+
+    <cm:property-placeholder persistent-id="camel.splunk.httpec.inbound">
+        <cm:default-properties>
+            <cm:property name="splunk.host" value="localhost"/>
+            <cm:property name="splunk.port" value="8088"/>
+            <cm:property name="splunk.source" value=""/>
+            <cm:property name="splunk.sourcetype" value="camel:hec2"/>
+            <cm:property name="splunk.index" value=""/>
+            <cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
+            <cm:property name="camel.vm.name.in" value="audit-disqualified"/>
+            <cm:property name="camel.route.id" value="Audit Disqualified Message"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="simpleEventCollector" class="com.pronoia.splunk.eventcollector.client.SimpleEventCollectorClient" init-method="disableCertificateValidation">
+        <property name="host" value="${splunk.host}"/>
+        <property name="port" value="${splunk.port}"/>
+        <property name="authorizationToken" value="${splunk.authorizationToken}"/>
+    </bean>
+
+    <bean id="splunkMessageBuilder" class="com.pronoia.camel.splunk.builder.SplunkMessageBuilder">
+        <property name="index" value="${splunk.index}"/>
+        <property name="source" value="${splunk.source}"/>
+        <property name="sourceType" value="${splunk.sourcetype}"/>
+    </bean>
+
+    <bean id="splunkHECRouteBuilder" class="com.pronoia.camel.splunk.routes.SplunkHECRouteBuilder">
+        <property name="splunkMessageBuilder" ref="splunkMessageBuilder"/>
+        <property name="simpleEventCollectorClient" ref="simpleEventCollector"/>
+    </bean>
+
+    <camelContext id="audit-to-splunk-inbound" xmlns="http://camel.apache.org/schema/blueprint">
+        <routeBuilder ref="splunkHECRouteBuilder"/>
+    </camelContext>
+
+</blueprint>

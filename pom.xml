@@ -40,7 +40,11 @@
             <artifactId>camel-core</artifactId>
             <version>${camel-version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.pronoia.splunk</groupId>
+            <artifactId>splunk.httpec</artifactId>
+            <version>0.1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -68,7 +72,24 @@
             <version>${slf4j-version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-blueprint</artifactId>
+            <version>${camel-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.6</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
