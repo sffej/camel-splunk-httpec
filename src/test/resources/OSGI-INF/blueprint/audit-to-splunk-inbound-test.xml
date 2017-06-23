@@ -9,8 +9,8 @@
             <cm:property name="splunk.source" value=""/>
             <cm:property name="splunk.sourcetype" value=""/>
             <cm:property name="splunk.index" value=""/>
-            <!-- cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/ -->
-            <cm:property name="splunk.authorizationToken" value="C0925622-B1B3-4F37-812B-E5689E4BBE79"/>
+            <cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
+            <!--<cm:property name="splunk.authorizationToken" value="C0925622-B1B3-4F37-812B-E5689E4BBE79"/>-->
             <cm:property name="camel.vm.name.in" value="audit-disqualified"/>
             <cm:property name="camel.route.id" value="Audit Disqualified Message"/>
         </cm:default-properties>
