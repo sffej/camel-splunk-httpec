@@ -107,7 +107,7 @@ public class SplunkEventBuilderIT extends CamelBlueprintTestSupport {
 
   @Test
   public void route() throws Exception {
-    template.sendBodyAndHeaders("direct-vm://audit-disqualified", exchangeIn.getIn().getBody().toString(), headers);
+    template.sendBodyAndHeaders("direct-vm://audit-error", exchangeIn.getIn().getBody().toString(), headers);
   }
 //    @Test
 //    public void history() throws Exception {

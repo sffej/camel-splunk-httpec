@@ -33,7 +33,12 @@ public class SplunkEventBuilder {
 
     instance.setTimestamp(camelCreatedTimestamp.getTime() / MILLISECONDS_PER_SECOND);
 
-    instance.setFields(messageHeaders);
+    //instance.setFields(messageHeaders);
+
+    for (Map.Entry<String, Object> entry : messageHeaders.entrySet()) {
+      instance.setField(entry.getKey(),entry.getValue()==null?"null":entry.getValue().toString());
+    }
+
     instance.setField("CallingRouteId", messageHistoryList.get(CALLING_ROUTE_LOCATION).getRouteId());
     instance.setField("TriggeredAuditRouteId", messageHistoryList.get(messageHistoryList.size() - AUDIT_ROUTE_OFFSET).getRouteId());
 

@@ -2,33 +2,39 @@
 <blueprint xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <cm:property-placeholder persistent-id="camel.splunk.httpec.inbound">
+    <cm:property-placeholder persistent-id="splunk.camel.audit.inbound.error">
         <cm:default-properties>
-            <cm:property name="splunk.host" value="localhost"/>
-            <cm:property name="splunk.port" value="8088"/>
-            <cm:property name="splunk.source" value=""/>
-            <cm:property name="splunk.sourcetype" value=""/>
-            <cm:property name="splunk.index" value=""/>
-            <cm:property name="splunk.authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
-            <!--<cm:property name="splunk.authorizationToken" value="C0925622-B1B3-4F37-812B-E5689E4BBE79"/>-->
-            <cm:property name="camel.vm.name.in" value="audit-disqualified"/>
-            <cm:property name="camel.route.id" value="Audit Disqualified Message"/>
+            <cm:property name="error-splunk-host" value="localhost"/>
+            <cm:property name="error-splunk-port" value="8088"/>
+            <cm:property name="error-splunk-source" value=""/>
+            <cm:property name="error-splunk-sourcetype" value=""/>
+            <cm:property name="error-splunk-index" value=""/>
+            <cm:property name="error-splunk-authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
+            <cm:property name="error-camel-vm-name-in" value="audit-error"/>
+            <cm:property name="error-camel-route-id" value="Audit Error"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="splunkEventBuilder" class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
-        <property name="index" value="${splunk.index}"/>
-        <property name="source" value="${splunk.source}"/>
-        <property name="sourceType" value="${splunk.sourcetype}"/>
+    <bean id="allowAllHostnameVerifier" class="org.apache.http.conn.ssl.AllowAllHostnameVerifier"/>
+
+    <bean id="splunkEventBuilderError" class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
+        <property name="index" value="${error-splunk-index}"/>
+        <property name="source" value="${error-splunk-source}"/>
+        <property name="sourceType" value="${error-splunk-sourcetype}"/>
     </bean>
 
-    <bean id="splunkHECRouteBuilder"
+    <bean id="splunkHECRouteBuilderError"
           class="com.pronoia.camel.splunk.httpec.DirectVmToSplunkHttpEventCollectorRouteBuilder">
-        <property name="splunkEventBuilder" ref="splunkEventBuilder"/>
+        <property name="splunkEventBuilder" ref="splunkEventBuilderError"/>
+        <property name="endpoint" value="${error-camel-vm-name-in}"/>
+        <property name="routeId" value="${error-camel-route-id}"/>
+        <property name="authToken" value="${error-splunk-authorizationToken}"/>
+        <property name="host" value="${error-splunk-host}"/>
+        <property name="port" value="${error-splunk-port}"/>
     </bean>
 
-    <camelContext id="audit-to-splunk-inbound" xmlns="http://camel.apache.org/schema/blueprint">
-        <routeBuilder ref="splunkHECRouteBuilder"/>
+    <camelContext id="audit-inbound-error" xmlns="http://camel.apache.org/schema/blueprint">
+        <routeBuilder ref="splunkHECRouteBuilderError"/>
     </camelContext>
 
 </blueprint>
