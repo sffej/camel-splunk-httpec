@@ -1,7 +1,6 @@
 package com.pronoia.camel.splunk.httpec;
 
 import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder;
-
 import com.pronoia.camel.splunk.httpec.http.InsecureX509TrustManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
@@ -9,9 +8,7 @@ import org.apache.camel.component.http4.HttpComponent;
 import org.apache.camel.util.jsse.SSLContextParameters;
 import org.apache.camel.util.jsse.TrustManagersParameters;
 
-
 import javax.net.ssl.X509ExtendedTrustManager;
-
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -31,8 +28,9 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
 
   boolean disableVerifier = true;
   boolean useHTTPS = true;
+  boolean loadConfigureHttps4 = false;
 
-  private void configureHttps4() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+  public void configureHttps4() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
     TrustManagersParameters trustManagersParameters = new TrustManagersParameters();
     X509ExtendedTrustManager extendedTrustManager = new InsecureX509TrustManager();
     trustManagersParameters.setTrustManager(extendedTrustManager);
@@ -40,14 +38,14 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
     SSLContextParameters sslContextParameters = new SSLContextParameters();
     sslContextParameters.setTrustManagers(trustManagersParameters);
 
-    HttpComponent httpComponent = getContext().getComponent("https4", HttpComponent.class);
-    httpComponent.setSslContextParameters(sslContextParameters);
+    HttpComponent insecurehttps = getContext().getComponent("https4", HttpComponent.class);
+    insecurehttps.setSslContextParameters(sslContextParameters);
   }
 
   @Override
   public void configure() throws Exception {
 
-    configureHttps4();
+    if( isLoadConfigureHttps4()) configureHttps4();
 
     //@formatter:off
 
@@ -55,12 +53,7 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
             .bean(splunkEventBuilder).id("Build Splunk Event")
             .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST)).id("Set header to POST")
             .setHeader("Authorization",constant("Splunk "+authToken)).id("Set header Auth Token")
-            .doTry()
-              .toF("%s4://%s:%d/services/collector%s",getHttpsURI(),host,port, getVerifierURI()).id("Send to Splunk")
-            .doCatch(Exception.class)
-              .to("log:com.pronoia.camel.splunk.httpec?level=ERROR&showAll=true&multiline=true").id("Log Exception")
-              .rollback().id("Rollback data")
-            .endDoTry();
+            .toF("%s://%s:%d/services/collector%s",getHttpsURI(),host,port, getVerifierURI()).id("Send to Splunk");
 
     //@formatter:on
   }
@@ -134,6 +127,14 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
   }
 
   protected String getHttpsURI() {
-    return useHTTPS?"https":"http";
+    return useHTTPS?"https4":"http4";
+  }
+
+  public boolean isLoadConfigureHttps4() {
+    return loadConfigureHttps4;
+  }
+
+  public void setLoadConfigureHttps4(boolean loadConfigureHttps4) {
+    this.loadConfigureHttps4 = loadConfigureHttps4;
   }
 }

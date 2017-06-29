@@ -10,27 +10,27 @@
             <cm:property name="error-splunk-sourcetype" value=""/>
             <cm:property name="error-splunk-index" value=""/>
             <cm:property name="error-splunk-authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>
-            <cm:property name="error-camel-vm-name-in" value="audit-error"/>
-            <cm:property name="error-camel-route-id" value="Audit Error"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <bean id="allowAllHostnameVerifier" class="org.apache.http.conn.ssl.AllowAllHostnameVerifier"/>
 
-    <bean id="splunkEventBuilderError" class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
-        <property name="index" value="${error-splunk-index}"/>
-        <property name="source" value="${error-splunk-source}"/>
-        <property name="sourceType" value="${error-splunk-sourcetype}"/>
-    </bean>
 
     <bean id="splunkHECRouteBuilderError"
-          class="com.pronoia.camel.splunk.httpec.DirectVmToSplunkHttpEventCollectorRouteBuilder">
-        <property name="splunkEventBuilder" ref="splunkEventBuilderError"/>
-        <property name="endpoint" value="${error-camel-vm-name-in}"/>
-        <property name="routeId" value="${error-camel-route-id}"/>
+          class="com.pronoia.camel.splunk.httpec.DirectVmToSplunkHttpEventCollectorRouteBuilder" init-method="configureHttps4">
+        <property name="splunkEventBuilder">
+            <bean class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
+                <property name="index" value="${error-splunk-index}"/>
+                <property name="source" value="${error-splunk-source}"/>
+                <property name="sourceType" value="${error-splunk-sourcetype}"/>
+            </bean>
+        </property>
+        <property name="endpoint" value="audit-error"/>
+        <property name="routeId" value="Audit Error"/>
         <property name="authToken" value="${error-splunk-authorizationToken}"/>
         <property name="host" value="${error-splunk-host}"/>
         <property name="port" value="${error-splunk-port}"/>
+        <property name="loadConfigureHttps4" value="true"/>
     </bean>
 
     <camelContext id="audit-inbound-error" xmlns="http://camel.apache.org/schema/blueprint">

@@ -23,7 +23,7 @@
     <groupId>com.pronoia.camel</groupId>
     <artifactId>camel.splunk.httpec</artifactId>
     <packaging>bundle</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.2</version>
 
     <name>Camel Routes sending to a Splunk HTTP Event Collector</name>
 
@@ -42,13 +42,18 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
+            <artifactId>camel-blueprint</artifactId>
+            <version>${camel-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
             <artifactId>camel-http4</artifactId>
             <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>com.pronoia.splunk</groupId>
             <artifactId>splunk.httpec</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -162,17 +167,5 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>libs-ucla-dev</id>
-            <name>UCLA Development JARs</name>
-            <url>http://esbartifactory.medctr.ucla.edu:6100/artifactory/libs-ext-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>libs-ucla-snapshot</id>
-            <name>UCLA Development SNAPSHOT JARs</name>
-            <url>http://esbartifactory.medctr.ucla.edu:6100/artifactory/libs-ext-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>
