@@ -2,6 +2,7 @@ package com.pronoia.camel.splunk.httpec.bean;
 
 import com.pronoia.splunk.eventcollector.builder.StringEventBuilder;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class SplunkEventBuilder {
   String index;
   String source;
   String sourceType;
+  String overrideBody;
+
 
   @Handler
   public String buildEvent(@ExchangeProperty("CamelCreatedTimestamp") Date camelCreatedTimestamp,
@@ -31,18 +34,35 @@ public class SplunkEventBuilder {
 
     StringEventBuilder instance = new StringEventBuilder();
 
+    instance.host();
+
     instance.setTimestamp(camelCreatedTimestamp.getTime() / MILLISECONDS_PER_SECOND);
 
-    //instance.setFields(messageHeaders);
-
     for (Map.Entry<String, Object> entry : messageHeaders.entrySet()) {
-      instance.setField(entry.getKey(),entry.getValue()==null?"null":entry.getValue().toString());
+      if( entry.getValue() instanceof byte[] ) continue;
+      if( entry.getValue()==null ) continue;
+      if( getOverrideBody()!=null && getOverrideBody().equals(entry.getKey().toString()) ) continue;
+      instance.setField(entry.getKey(),entry.getValue().toString());
+    }
+
+    if (System.getProperty("karaf.name") != null ) {
+      instance.setField("container", System.getProperty("karaf.name"));
     }
 
     instance.setField("CallingRouteId", messageHistoryList.get(CALLING_ROUTE_LOCATION).getRouteId());
     instance.setField("TriggeredAuditRouteId", messageHistoryList.get(messageHistoryList.size() - AUDIT_ROUTE_OFFSET).getRouteId());
 
-    instance.setEvent(body);
+    if(overrideBody==null) {
+      instance.setEvent(body);
+    } else if(overrideBody.equals("audit")) {
+      String auditEvent = "UCLA.AuditCode:\""+messageHeaders.get("UCLA.AuditCode").toString()+"\""
+                        + " UCLA.AuditSource:\""+messageHeaders.get("UCLA.AuditSource").toString()+"\""
+                        + " UCLA.AuditReason:\""+messageHeaders.get("UCLA.AuditReason").toString()+"\""
+                        + " UCLA.AuditText:\""+messageHeaders.get("UCLA.AuditText").toString()+"\"";
+      instance.setEvent(auditEvent);
+    } else {
+      instance.setEvent(messageHeaders.get(overrideBody).toString());
+    }
 
     if (hasIndex()) {
       instance.setIndex(getIndex());
@@ -91,5 +111,13 @@ public class SplunkEventBuilder {
 
   public void setSourceType(String sourceType) {
     this.sourceType = sourceType;
+  }
+
+  public String getOverrideBody() {
+    return overrideBody;
+  }
+
+  public void setOverrideBody(String overrideBody) {
+    this.overrideBody = overrideBody;
   }
 }

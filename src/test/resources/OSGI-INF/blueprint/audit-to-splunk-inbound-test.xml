@@ -6,7 +6,7 @@
         <cm:default-properties>
             <cm:property name="error-splunk-host" value="localhost"/>
             <cm:property name="error-splunk-port" value="8088"/>
-            <cm:property name="error-splunk-source" value=""/>
+            <cm:property name="error-splunk-source" value="abc123"/>
             <cm:property name="error-splunk-sourcetype" value=""/>
             <cm:property name="error-splunk-index" value=""/>
             <cm:property name="error-splunk-authorizationToken" value="D29AAACD-76E5-4AB7-86EB-D760E6CF34FB"/>

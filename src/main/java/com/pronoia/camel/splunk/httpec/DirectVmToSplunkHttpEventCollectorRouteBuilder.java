@@ -4,14 +4,20 @@ import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder;
 import com.pronoia.camel.splunk.httpec.http.InsecureX509TrustManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.http4.HttpClientConfigurer;
 import org.apache.camel.component.http4.HttpComponent;
 import org.apache.camel.util.jsse.SSLContextParameters;
 import org.apache.camel.util.jsse.TrustManagersParameters;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 
 import javax.net.ssl.X509ExtendedTrustManager;
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -20,6 +26,8 @@ import java.security.NoSuchAlgorithmException;
 public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder {
 
   SplunkEventBuilder splunkEventBuilder;
+  static final long CONNECTION_TIME_TO_LIVE_MILLIS = 500;
+  static final int RETRY_COUNT = 3;
   String endpoint = "";
   String routeId = "";
   String authToken = "";
@@ -40,6 +48,15 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
 
     HttpComponent insecurehttps = getContext().getComponent("https4", HttpComponent.class);
     insecurehttps.setSslContextParameters(sslContextParameters);
+    insecurehttps.setConnectionTimeToLive(CONNECTION_TIME_TO_LIVE_MILLIS);
+    HttpClientConfigurer httpClientConfigurer = new HttpClientConfigurer() {
+      @Override
+      public void configureHttpClient(HttpClientBuilder httpClientBuilder) {
+        httpClientBuilder = HttpClients.custom();
+        httpClientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(RETRY_COUNT,true));
+      }
+    };
+    insecurehttps.setHttpClientConfigurer(httpClientConfigurer);
   }
 
   @Override
@@ -48,13 +65,16 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
     if( isLoadConfigureHttps4()) configureHttps4();
 
     //@formatter:off
-
     fromF( "direct-vm://%s", endpoint ).routeId( routeId )
             .bean(splunkEventBuilder).id("Build Splunk Event")
             .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST)).id("Set header to POST")
             .setHeader("Authorization",constant("Splunk "+authToken)).id("Set header Auth Token")
-            .toF("%s://%s:%d/services/collector%s",getHttpsURI(),host,port, getVerifierURI()).id("Send to Splunk");
-
+            .doTry()
+              .toF("%s://%s:%d/services/collector%s",getHttpsURI(),host,port, getVerifierURI()).id("Send to Splunk")
+            .doCatch(IOException.class)
+              .to("log:com.pronoia.camel.splunk.httpec?level=ERROR&showAll=true")
+            .endDoTry();
+    ;
     //@formatter:on
   }
 
