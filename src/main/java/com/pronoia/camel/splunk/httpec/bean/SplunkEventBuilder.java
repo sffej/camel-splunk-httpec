@@ -20,6 +20,7 @@ public class SplunkEventBuilder {
   static final int CALLING_ROUTE_LOCATION = 0;
   static final int AUDIT_ROUTE_OFFSET = 1;
 
+  String host;
   String index;
   String source;
   String sourceType;
@@ -34,7 +35,11 @@ public class SplunkEventBuilder {
 
     StringEventBuilder instance = new StringEventBuilder();
 
-    instance.host();
+    if (hasHost()) {
+      instance.setHost(host);
+    } else {
+      instance.setHost();
+    }
 
     instance.setTimestamp(camelCreatedTimestamp.getTime() / MILLISECONDS_PER_SECOND);
 
@@ -75,6 +80,18 @@ public class SplunkEventBuilder {
     }
 
     return instance.build();
+  }
+
+  public boolean hasHost() {
+    return host != null && !host.isEmpty();
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public void setHost(String host) {
+    this.host = host;
   }
 
   public boolean hasIndex() {
