@@ -15,11 +15,13 @@ import org.apache.camel.impl.DefaultMessageHistory;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created by bryan on 6/22/17.
  */
+@Ignore("Being replaced by refactored versions")
 public class SplunkEventBuilderIT extends CamelBlueprintTestSupport {
   SplunkEventBuilder instance;
 

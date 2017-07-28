@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <cm:property-placeholder persistent-id="VmToSplunkRouteWithAlternateSchemeBlueprintIT">
+        <cm:default-properties>
+            <cm:property name="route-id">
+                <null/>
+            </cm:property>
+            <cm:property name="target-component">
+                <null/>
+            </cm:property>
+            <cm:property name="endpoint-name">
+                <null/>
+            </cm:property>
+            <cm:property name="splunk-host">
+                <null/>
+            </cm:property>
+            <cm:property name="splunk-port">
+                <null/>
+            </cm:property>
+            <cm:property name="splunk-index">
+                <null/>
+            </cm:property>
+            <cm:property name="splunk-authorization-token">
+                <null/>
+            </cm:property>
+            <cm:property name="validate-certificates">
+                <null/>
+            </cm:property>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- The id for this bean must match the scheme property -->
+    <bean id="httpec" class="org.apache.camel.component.http4.HttpComponent"/>
+
+    <bean id="route-builder"
+          class="com.pronoia.camel.splunk.httpec.VmToSplunkRouteBuilder">
+        <property name="splunkEventProcessor">
+            <bean class="com.pronoia.camel.splunk.httpec.processor.SplunkHttp4EventProcessor">
+                <property name="splunkHost" value="${splunk-host}"/>
+                <property name="splunkPort" value="${splunk-port}"/>
+                <property name="splunkAuthorizationToken" value="${splunk-authorization-token}"/>
+                <property name="exchangeEventBuilder">
+                    <bean class="com.pronoia.camel.splunk.httpec.eventbuilder.DefaultCamelExchangeEventBuilder">
+                        <property name="index" value="fuse-dev"/>
+                        <property name="includedSystemProperties">
+                            <map key-type="java.lang.String" value-type="java.lang.String">
+                                <entry key="karaf.name" value="container" />
+                            </map>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="routeId" value="${route-id}"/>
+        <property name="targetComponent" value="${target-component}"/>
+        <property name="sourceEndpointName" value="${endpoint-name}"/>
+        <property name="validateCertificates" value="${validate-certificates}"/>
+    </bean>
+
+    <camelContext id="audit-inbound-error" xmlns="http://camel.apache.org/schema/blueprint">
+        <routeBuilder ref="route-builder"/>
+    </camelContext>
+
+</blueprint>
