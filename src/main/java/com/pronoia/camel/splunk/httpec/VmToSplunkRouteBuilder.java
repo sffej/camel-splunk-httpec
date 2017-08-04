@@ -42,13 +42,18 @@ public class VmToSplunkRouteBuilder extends Http4ToSplunkRouteBuilderSupport {
 
     // @formatter:off
     fromF(sedaUriBuilder.toString()).routeId(routeId + " delivery")
-        .onException(IOException.class, ConnectException.class)
+        .onException(Exception.class).id("Handle exceptions")
+          .handled(true)
+            .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage()).id("Log Delivery Failure")
+            .log(getFailedBodyLoggingLevel(), getFailedBodyMessage()).id("Log Undelivered Body")
+          .end()
+        .onException(IOException.class, ConnectException.class).id("Handle redelivery")
           .handled(true)
           .maximumRedeliveries(maximumRedeliveries)
           .redeliveryDelay(redeliveryDelay)
           .logExhausted(false)
           .logExhaustedMessageBody(false)
-            .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage()).id("Log Delivery Failure")
+            .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage()).id("Log redelivery Failure")
             .log(getFailedBodyLoggingLevel(), getFailedBodyMessage()).id("Log Failed Body")
           .end()
         .toF("%s://splunk-event-collector", getTargetComponent()).id("Send to Splunk");
