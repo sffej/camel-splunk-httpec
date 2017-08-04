@@ -42,6 +42,7 @@ public class VmToSplunkRouteIT extends CamelTestSupport {
 
     DefaultCamelExchangeEventBuilder eventBuilder = new DefaultCamelExchangeEventBuilder();
     eventBuilder.setIndex("fuse-dev");
+    eventBuilder.setSourcetype("test-sourcetype");
     eventBuilder.includeSystemProperty("karaf.name");
 
     eventProcessor.setExchangeEventBuilder(eventBuilder);
@@ -74,13 +75,14 @@ public class VmToSplunkRouteIT extends CamelTestSupport {
    * @throws Exception in the event of a test error.
    */
   @Test
-  public void testSingleMessage() throws Exception {
+  public void testSingleEvent() throws Exception {
     complete.expectedMessageCount(1);
 
-    String event = String.format("%tF Test Event from %s", System.currentTimeMillis(), this.getClass().getSimpleName());
+    String event = String.format("%tF Test Single Event from %s", System.currentTimeMillis(), this.getClass().getSimpleName());
     template.sendBody("direct://" + TRIGGER_ENDPOINIT, event);
 
     assertMockEndpointsSatisfied();
+    Thread.sleep(1000);
   }
 
   /**
@@ -101,7 +103,7 @@ public class VmToSplunkRouteIT extends CamelTestSupport {
       for (int message = 1; message <= messagesPerLoop; ++message) {
         int messageNumber = (loop * messagesPerLoop) + message;
         log.info("Sending event {}", messageNumber);
-        String event = String.format("%tF Test Event %d from %s", System.currentTimeMillis(), messageNumber, this.getClass().getSimpleName());
+        String event = String.format("%tF Test Multiple Events %d from %s", System.currentTimeMillis(), messageNumber, this.getClass().getSimpleName());
         template.sendBody("direct://" + TRIGGER_ENDPOINIT, event);
         ++messageNumber;
         Thread.sleep(delayBetweenMessages);

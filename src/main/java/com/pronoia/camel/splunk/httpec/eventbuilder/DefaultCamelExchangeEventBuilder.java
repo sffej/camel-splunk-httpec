@@ -20,13 +20,17 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
   Pattern excludeHeaderPattern;
   Pattern includeHeaderPattern;
 
+  public DefaultCamelExchangeEventBuilder() {
+    if (!hasHost()) {
+      setHost();
+    }
+  }
+
   @Override
   protected void serializeFields(Map<String, Object> eventObject) {
     Exchange exchange = getEvent();
 
-    if (!hasTimestamp()) {
-      setTimestamp(exchange.getProperty("CamelCreatedTimestamp", Date.class));
-    }
+    setTimestamp(exchange.getProperty("CamelCreatedTimestamp", Date.class));
 
     if (includeExchangeProperties) {
       Map<String, Object> exchangeProperties = exchange.getProperties();
@@ -77,16 +81,6 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
                 addField(headerName, headerValueString);
               }
             }
-          }
-        }
-      }
-
-      for (Map.Entry<String, Object> header : message.getHeaders().entrySet()) {
-        Object value = header.getValue();
-        if (value != null) {
-          String stringValue = value.toString();
-          if (!stringValue.isEmpty()) {
-            addField(header.getKey(), stringValue);
           }
         }
       }
