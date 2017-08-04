@@ -2,10 +2,14 @@ package com.pronoia.camel.splunk.httpec;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.StringJoiner;
 
 import org.apache.camel.LoggingLevel;
 
 public class VmToSplunkRouteBuilder extends Http4ToSplunkRouteBuilderSupport {
+  static final String INTERNAL_DELIVERY_QUEUE_NAME = "splunk-delivery-queue";
+  static final String DEFAULT_SEDA_OPTIONS = "waitForTaskToComplete=Never&purgeWhenStopping=true";
+
   Integer size;
   Integer concurrentConsumers;
 
@@ -16,39 +20,50 @@ public class VmToSplunkRouteBuilder extends Http4ToSplunkRouteBuilderSupport {
   public void configure() throws Exception {
     super.configure();
 
-    StringBuilder sedaUriBuilder = new StringBuilder("seda://splunk-event-collector?waitForTaskToComplete=Never&purgeWhenStopping=true");
+    StringBuilder sedaUriBuilder = new StringBuilder("seda://");
+    sedaUriBuilder.append(INTERNAL_DELIVERY_QUEUE_NAME);
+
+    StringJoiner optionsJoiner = new StringJoiner("&", "?", "");
+    optionsJoiner.setEmptyValue("");
+
+    if (hasDefaultSedaOptions()) {
+      optionsJoiner.add(DEFAULT_SEDA_OPTIONS);
+    }
+
     if (hasSize()) {
-      sedaUriBuilder.append("&size=")
-          .append(size);
+      optionsJoiner.add("size=" + size);
     }
 
     if (hasConcurrentConsumers()) {
-      sedaUriBuilder.append("&concurrentConsumers=")
-          .append(concurrentConsumers);
+      optionsJoiner.add("concurrentConsumers=" + concurrentConsumers);
     }
 
-    fromF(sedaUriBuilder.toString()).routeId(routeId + "-delivery")
-        .onException(IOException.class, ConnectException.class)
-            .handled(true)
-            .maximumRedeliveries(maximumRedeliveries)
-            .redeliveryDelay(redeliveryDelay)
-            .logExhausted(false)
-            .logExhaustedMessageBody(false)
-            .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage())
-            .log(getFailedBodyLoggingLevel(), getFailedBodyMessage())
-            .end()
-        .toF("%s://splunk-event-collector", getTargetComponent()).id("Send to Splunk")
-    ;
+    sedaUriBuilder.append(optionsJoiner.toString());
 
-    fromF("direct-vm://%s", getSourceEndpointName()).routeId(routeId + "-receiver")
-        .onException(IllegalStateException.class)
+    // @formatter:off
+    fromF(sedaUriBuilder.toString()).routeId(routeId + " delivery")
+        .onException(IOException.class, ConnectException.class)
+          .handled(true)
+          .maximumRedeliveries(maximumRedeliveries)
+          .redeliveryDelay(redeliveryDelay)
+          .logExhausted(false)
+          .logExhaustedMessageBody(false)
+            .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage()).id("Log Delivery Failure")
+            .log(getFailedBodyLoggingLevel(), getFailedBodyMessage()).id("Log Failed Body")
+          .end()
+        .toF("%s://splunk-event-collector", getTargetComponent()).id("Send to Splunk");
+    // @formatter:on
+
+    // @formatter:off
+    fromF("direct-vm://%s", getSourceEndpointName()).routeId(routeId + " receiver")
+        .onException(IllegalStateException.class).id(IllegalStateException.class.getSimpleName() + " handler")
           .onWhen(simple("${exception.message} == 'Queue full'"))
           .handled(true)
-          .log(LoggingLevel.ERROR, "Failed to deliver event: ${body} - ${exception}")
+            .log(LoggingLevel.ERROR, "Failed to deliver event: ${body} - ${exception}").id("Log 'Queue full' delivery failure")
           .end()
-        .process(getSplunkEventProcessor())
-        .toF("seda://splunk-event-collector", getTargetComponent()).id("Queue for deliver")
-    ;
+        .process(getSplunkEventProcessor()).id("Prepare Splunk JSON payload")
+        .toF("seda://%s", INTERNAL_DELIVERY_QUEUE_NAME).id("Queue for delivery");
+    // @formatter:on
 
   }
 
@@ -90,6 +105,10 @@ public class VmToSplunkRouteBuilder extends Http4ToSplunkRouteBuilderSupport {
 
   public void setRedeliveryDelay(long redeliveryDelay) {
     this.redeliveryDelay = redeliveryDelay;
+  }
+
+  boolean hasDefaultSedaOptions() {
+    return DEFAULT_SEDA_OPTIONS != null && !DEFAULT_SEDA_OPTIONS.isEmpty();
   }
 
 }

@@ -11,8 +11,8 @@ public class DirectVmToSplunkRouteBuilder extends Http4ToSplunkRouteBuilderSuppo
         .doTry()
           .toF("%s://splunk-event-collector", getTargetComponent()).id("Send to Splunk")
         .doCatch(Exception.class)
-          .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage())
-          .log(getFailedBodyLoggingLevel(), getFailedBodyMessage())
+          .log(getDeliveryFailureLoggingLevel(), getDeliveryFailureMessage()).id("Log Delivery Failure")
+          .log(getFailedBodyLoggingLevel(), getFailedBodyMessage()).id("Log Failed Body")
         .endDoTry();
     // @formatter:on
   }
