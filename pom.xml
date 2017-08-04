@@ -23,7 +23,7 @@
     <groupId>com.pronoia.camel</groupId>
     <artifactId>camel.splunk.httpec</artifactId>
     <packaging>bundle</packaging>
-    <version>0.1.7-SNAPSHOT</version>
+    <version>0.1.8</version>
 
     <name>Camel Routes sending to a Splunk HTTP Event Collector</name>
 
