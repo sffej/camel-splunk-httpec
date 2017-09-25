@@ -1,6 +1,6 @@
 package com.pronoia.camel.splunk.httpec.itest.bean;
 
-import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder;
+import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilderBean;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,8 +22,8 @@ import org.junit.Test;
  * Created by bryan on 6/22/17.
  */
 @Ignore("Being replaced by refactored versions")
-public class SplunkEventBuilderIT extends CamelBlueprintTestSupport {
-  SplunkEventBuilder instance;
+public class SplunkEventBuilderBeanIT extends CamelBlueprintTestSupport {
+  SplunkEventBuilderBean instance;
 
   Exchange exchangeIn;
   Map<String, Object> headers;
@@ -32,7 +32,7 @@ public class SplunkEventBuilderIT extends CamelBlueprintTestSupport {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    instance = new SplunkEventBuilder();
+    instance = new SplunkEventBuilderBean();
     String body = "MSH|^~\\&|HAR|1000|JCAPS|CC|20170621091034|U0013110|ADT^A08|15291|D|2.3\n" +
         "EVN|A08|20170621091034||REG_UPDATE|U0013110^RAPOPORT^SVETLANA^^^^^^UCLA^^^^^RRMC\n" +
         "PID|1|4489163^^^MRN^MRN|4489163^^^MRN^MRN||DEEPA^KALI||19800929|F||I|345 W WASHINGTON AVE^^AGOURA HILLS^CA^91377^USA^P^^VENTURA|VENTURA|(661)123-1234^P^PH^^^661^1231234||ENGLISH|M||10004035||||N||||||||N\n" +

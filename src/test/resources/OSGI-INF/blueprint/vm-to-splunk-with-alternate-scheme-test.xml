@@ -41,7 +41,7 @@
                 <property name="splunkHost" value="${splunk-host}"/>
                 <property name="splunkPort" value="${splunk-port}"/>
                 <property name="splunkAuthorizationToken" value="${splunk-authorization-token}"/>
-                <property name="exchangeEventBuilder">
+                <property name="splunkEventBuilder">
                     <bean class="com.pronoia.camel.splunk.httpec.eventbuilder.DefaultCamelExchangeEventBuilder">
                         <property name="index" value="fuse-dev"/>
                         <property name="includedSystemProperties">

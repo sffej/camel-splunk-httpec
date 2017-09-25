@@ -84,23 +84,23 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
             +   "\"JMSDestination\":\"queue://audit.in\","
             +   "\"JMSExpiration\":\"0\","
-            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
             +   "\"JMSRedelivered\":\"false\","
             +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"JMSDeliveryMode\":\"2\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\""
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
     // @formatter:on
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -119,17 +119,17 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
             +   "\"JMSDestination\":\"queue://audit.in\","
             +   "\"JMSExpiration\":\"0\","
-            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
             +   "\"JMSRedelivered\":\"false\","
             +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"JMSDeliveryMode\":\"2\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\""
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"[Camel Message Body was excluded]\"" +
             "}";
@@ -137,7 +137,7 @@ public class DefaultCamelExchangeEventBuilderTest {
 
     instance.setIncludeBody(false);
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -156,7 +156,7 @@ public class DefaultCamelExchangeEventBuilderTest {
 
     instance.setIncludeMessageHeaders(false);
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -168,22 +168,22 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
             +   "\"AuditCode\":\"TestAuditCode\","
-            +   "\"container\":\"test-container\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
-            +   "\"JMSExpiration\":\"0\","
-            +   "\"JMSRedelivered\":\"false\","
-            +   "\"CamelMessageHistory\":\"[DefaultMessageHistory[routeId=routeid-one, node=null], DefaultMessageHistory[routeId=routeid-two, node=null]]\","
-            +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"AuditReason\":\"TestAuditReason\","
-            +   "\"JMSDeliveryMode\":\"2\","
-            +   "\"CamelCreatedTimestamp\":\"Wed Jun 21 10:10:37 MDT 2017\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSDestination\":\"queue://audit.in\","
-            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
             +   "\"AuditSource\":\"TestAuditSource\","
+            +   "\"CamelMessageHistory\":\"[DefaultMessageHistory[routeId=routeid-one, node=null], DefaultMessageHistory[routeId=routeid-two, node=null]]\","
             +   "\"AuditText\":\"TestAuditText\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\""
+            +   "\"AuditReason\":\"TestAuditReason\","
+            +   "\"CamelCreatedTimestamp\":\"Wed Jun 21 10:10:37 MDT 2017\","
+            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
+            +   "\"JMSDestination\":\"queue://audit.in\","
+            +   "\"JMSExpiration\":\"0\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
+            +   "\"JMSRedelivered\":\"false\","
+            +   "\"JMSTimestamp\":\"1498061437458\","
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
@@ -191,25 +191,25 @@ public class DefaultCamelExchangeEventBuilderTest {
 
     instance.setIncludeExchangeProperties(true);
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
-  public void testIncludeHeaderPatter() throws Exception {
+  public void testIncludeHeaderPattern() throws Exception {
     // @formatter:off
     String EXPECTED =
         "{"
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSDeliveryMode\":\"2\","
             +   "\"JMSDestination\":\"queue://audit.in\","
             +   "\"JMSExpiration\":\"0\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
             +   "\"JMSRedelivered\":\"false\","
             +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"JMSDeliveryMode\":\"2\""
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
@@ -217,20 +217,20 @@ public class DefaultCamelExchangeEventBuilderTest {
 
     instance.setIncludeHeaderPattern("JMS.*");
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
   @Test
-  public void testExcludeHeaderPatter() throws Exception {
+  public void testExcludeHeaderPattern() throws Exception {
     // @formatter:off
     String EXPECTED =
         "{"
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
             +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
             +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\""
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
@@ -238,7 +238,7 @@ public class DefaultCamelExchangeEventBuilderTest {
 
     instance.setExcludeHeaderPattern("JMS.*");
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -249,19 +249,19 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
-            +   "\"JMSExpiration\":\"0\","
-            +   "\"JMSRedelivered\":\"false\","
             +   "\"CamelMessageHistory\":\"[DefaultMessageHistory[routeId=routeid-one, node=null], DefaultMessageHistory[routeId=routeid-two, node=null]]\","
-            +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"JMSDeliveryMode\":\"2\","
             +   "\"CamelCreatedTimestamp\":\"Wed Jun 21 10:10:37 MDT 2017\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSDestination\":\"queue://audit.in\","
             +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\""
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
+            +   "\"JMSDestination\":\"queue://audit.in\","
+            +   "\"JMSExpiration\":\"0\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
+            +   "\"JMSRedelivered\":\"false\","
+            +   "\"JMSTimestamp\":\"1498061437458\","
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
@@ -270,7 +270,7 @@ public class DefaultCamelExchangeEventBuilderTest {
     instance.setIncludeExchangeProperties(true);
     instance.setIncludePropertyPattern("Camel.*");
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -282,20 +282,20 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
             +   "\"AuditCode\":\"TestAuditCode\","
-            +   "\"container\":\"test-container\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
-            +   "\"JMSExpiration\":\"0\","
-            +   "\"JMSRedelivered\":\"false\","
-            +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"AuditReason\":\"TestAuditReason\","
-            +   "\"JMSDeliveryMode\":\"2\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSDestination\":\"queue://audit.in\","
-            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
             +   "\"AuditSource\":\"TestAuditSource\","
             +   "\"AuditText\":\"TestAuditText\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\""
+            +   "\"AuditReason\":\"TestAuditReason\","
+            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
+            +   "\"JMSDestination\":\"queue://audit.in\","
+            +   "\"JMSExpiration\":\"0\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
+            +   "\"JMSRedelivered\":\"false\","
+            +   "\"JMSTimestamp\":\"1498061437458\","
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":\"Dummy Body\"" +
             "}";
@@ -304,7 +304,7 @@ public class DefaultCamelExchangeEventBuilderTest {
     instance.setIncludeExchangeProperties(true);
     instance.setExcludePropertyPattern("Camel.*");
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
   @Test
@@ -319,16 +319,16 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "},"
             + "\"event\":{"
             +   "\"messageHeaders\":{"
-            +     "\"JMSPriority\":\"4\","
-            +     "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +     "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +     "\"CamelMllpAutoAcknowledge\":\"true\","
+            +     "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +     "\"JMSDeliveryMode\":\"2\","
             +     "\"JMSDestination\":\"queue://audit.in\","
             +     "\"JMSExpiration\":\"0\","
-            +     "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +     "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +     "\"JMSPriority\":\"4\","
             +     "\"JMSRedelivered\":\"false\","
-            +     "\"JMSTimestamp\":\"1498061437458\","
-            +     "\"JMSDeliveryMode\":\"2\","
-            +     "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
-            +     "\"CamelMllpAutoAcknowledge\":\"true\""
+            +     "\"JMSTimestamp\":\"1498061437458\""
             +   "},"
             +   "\"messageBody\":\"Dummy Body\""
             + "}"
@@ -338,7 +338,7 @@ public class DefaultCamelExchangeEventBuilderTest {
     // instance.setIncludeBody(false);
     instance.headersAsFields = false;
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 
 
@@ -350,20 +350,19 @@ public class DefaultCamelExchangeEventBuilderTest {
             + "\"host\":\"DummyHost\","
             + "\"time\":\"1498061437.000\",\""
             + "fields\":{"
-            +   "\"container\":\"test-container\","
-            +   "\"JMSPriority\":\"4\","
-            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"CamelMllpAutoAcknowledge\":\"true\","
+            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
+            +   "\"JMSDeliveryMode\":\"2\","
             +   "\"JMSDestination\":\"queue://audit.in\","
             +   "\"JMSExpiration\":\"0\","
-            +   "\"breadcrumbId\":\"ID-lstiesbap01-34111-1497883509001-11-559\","
+            +   "\"JMSMessageID\":\"ID:lstiesbap01-42602-1497883989994-11:1:1:1:67\","
+            +   "\"JMSPriority\":\"4\","
             +   "\"JMSRedelivered\":\"false\","
             +   "\"JMSTimestamp\":\"1498061437458\","
-            +   "\"JMSDeliveryMode\":\"2\","
-            +   "\"CamelMllpLocalAddress\":\"/10.12.171.14\","
-            +   "\"CamelMllpAutoAcknowledge\":\"true\""
+            +   "\"container\":\"test-container\""
             + "},"
             + "\"event\":{"
-            +   "\"messageBody\":\"Dummy Body\","
             +   "\"exchangeProperties\":{"
             +     "\"AuditCode\":\"TestAuditCode\","
             +     "\"AuditSource\":\"TestAuditSource\","
@@ -371,7 +370,8 @@ public class DefaultCamelExchangeEventBuilderTest {
             +     "\"AuditText\":\"TestAuditText\","
             +     "\"AuditReason\":\"TestAuditReason\","
             +     "\"CamelCreatedTimestamp\":\"Wed Jun 21 10:10:37 MDT 2017\""
-            +   "}"
+            +   "},"
+            +   "\"messageBody\":\"Dummy Body\""
             + "}"
             + "}";
     // @formatter:on
@@ -379,6 +379,6 @@ public class DefaultCamelExchangeEventBuilderTest {
     instance.setIncludeExchangeProperties(true);
     instance.propertiesAsFields = false;
 
-    assertEquals(EXPECTED, instance.event(exchange).build());
+    assertEquals(EXPECTED, instance.eventBody(exchange).build());
   }
 }

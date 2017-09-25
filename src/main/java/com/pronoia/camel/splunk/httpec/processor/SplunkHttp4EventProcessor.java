@@ -2,7 +2,6 @@ package com.pronoia.camel.splunk.httpec.processor;
 
 import com.pronoia.camel.splunk.httpec.eventbuilder.CamelExchangeEventBuilder;
 import com.pronoia.camel.splunk.httpec.eventbuilder.DefaultCamelExchangeEventBuilder;
-import com.pronoia.splunk.eventcollector.EventBuilder;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -20,7 +19,7 @@ public class SplunkHttp4EventProcessor implements Processor {
   Integer splunkPort = 8088;
   String splunkAuthorizationToken;
 
-  CamelExchangeEventBuilder exchangeEventBuilder = new DefaultCamelExchangeEventBuilder();
+  CamelExchangeEventBuilder splunkEventBuilder = new DefaultCamelExchangeEventBuilder();
 
   String cachedAuthorizationHeader;
 
@@ -60,16 +59,16 @@ public class SplunkHttp4EventProcessor implements Processor {
     this.splunkAuthorizationToken = splunkAuthorizationToken;
   }
 
-  public boolean hasExchangeEventBuilder() {
-    return exchangeEventBuilder != null;
+  public boolean hasSplunkEventBuilder() {
+    return splunkEventBuilder != null;
   }
 
-  public CamelExchangeEventBuilder getExchangeEventBuilder() {
-    return exchangeEventBuilder;
+  public CamelExchangeEventBuilder getSplunkEventBuilder() {
+    return splunkEventBuilder;
   }
 
-  public void setExchangeEventBuilder(CamelExchangeEventBuilder exchangeEventBuilder) {
-    this.exchangeEventBuilder = exchangeEventBuilder;
+  public void setSplunkEventBuilder(CamelExchangeEventBuilder splunkEventBuilder) {
+    this.splunkEventBuilder = splunkEventBuilder;
   }
 
   public void verifyConfiguration() {
@@ -85,9 +84,9 @@ public class SplunkHttp4EventProcessor implements Processor {
       throw new IllegalStateException("Splunk Authorization Token must be specified");
     }
 
-    if (!hasExchangeEventBuilder()) {
-      exchangeEventBuilder = new DefaultCamelExchangeEventBuilder();
-      log.warn("Splunk EventBuilder<Exchange> not specified using {} as default", exchangeEventBuilder.getClass().getName());
+    if (!hasSplunkEventBuilder()) {
+      splunkEventBuilder = new DefaultCamelExchangeEventBuilder();
+      log.warn("Splunk EventBuilder<Exchange> not specified using {} as default", splunkEventBuilder.getClass().getName());
     }
 
     this.cachedAuthorizationHeader = String.format("Splunk %s", getSplunkAuthorizationToken());
@@ -100,7 +99,7 @@ public class SplunkHttp4EventProcessor implements Processor {
     }
 
     // Build the new body before adding all the CamelHttp headers
-    String eventBody = exchangeEventBuilder.event(exchange).build();
+    String eventBody = splunkEventBuilder.eventBody(exchange).build();
 
     Message message = exchange.hasOut() ? exchange.getOut() : exchange.getIn();
 

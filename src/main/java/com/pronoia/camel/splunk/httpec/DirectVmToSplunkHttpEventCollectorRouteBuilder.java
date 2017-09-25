@@ -1,6 +1,6 @@
 package com.pronoia.camel.splunk.httpec;
 
-import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder;
+import com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilderBean;
 import com.pronoia.camel.splunk.httpec.http.InsecureX509TrustManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -25,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder {
 
-  SplunkEventBuilder splunkEventBuilder;
+  SplunkEventBuilderBean splunkEventBuilderBean;
   static final long CONNECTION_TIME_TO_LIVE_MILLIS = 500;
   static final int RETRY_COUNT = 3;
   String endpoint = "";
@@ -66,7 +65,7 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
 
     //@formatter:off
     fromF( "direct-vm://%s", endpoint ).routeId( routeId )
-            .bean(splunkEventBuilder).id("Build Splunk Event")
+            .bean(splunkEventBuilderBean).id("Build Splunk Event")
             .setHeader(Exchange.HTTP_METHOD, constant(org.apache.camel.component.http4.HttpMethods.POST)).id("Set header to POST")
             .setHeader("Authorization",constant("Splunk "+authToken)).id("Set header Auth Token")
             .doTry()
@@ -78,12 +77,12 @@ public class DirectVmToSplunkHttpEventCollectorRouteBuilder extends RouteBuilder
     //@formatter:on
   }
 
-  public SplunkEventBuilder getSplunkEventBuilder() {
-    return splunkEventBuilder;
+  public SplunkEventBuilderBean getSplunkEventBuilderBean() {
+    return splunkEventBuilderBean;
   }
 
-  public void setSplunkEventBuilder(SplunkEventBuilder splunkEventBuilder) {
-    this.splunkEventBuilder = splunkEventBuilder;
+  public void setSplunkEventBuilderBean(SplunkEventBuilderBean splunkEventBuilderBean) {
+    this.splunkEventBuilderBean = splunkEventBuilderBean;
   }
 
   public String getEndpoint() {

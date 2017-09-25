@@ -47,7 +47,7 @@ public class DirectVmToSplunkRouteIT extends CamelTestSupport {
     eventBuilder.setIndex("fuse-dev");
     eventBuilder.includeSystemProperty("karaf.name");
 
-    eventProcessor.setExchangeEventBuilder( eventBuilder);
+    eventProcessor.setSplunkEventBuilder( eventBuilder);
 
     builder.setSplunkEventProcessor( eventProcessor );
 

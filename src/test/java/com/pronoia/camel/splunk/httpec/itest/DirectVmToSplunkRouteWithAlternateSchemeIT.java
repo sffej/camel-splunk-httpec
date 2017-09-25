@@ -5,7 +5,6 @@ import static com.pronoia.camel.splunk.httpec.itest.SplunkConnectionInfo.SPLUNK_
 import static com.pronoia.camel.splunk.httpec.itest.SplunkConnectionInfo.SPLUNK_PORT;
 
 import com.pronoia.camel.splunk.httpec.DirectVmToSplunkRouteBuilder;
-import com.pronoia.camel.splunk.httpec.eventbuilder.CamelExchangeEventBuilder;
 import com.pronoia.camel.splunk.httpec.eventbuilder.DefaultCamelExchangeEventBuilder;
 import com.pronoia.camel.splunk.httpec.processor.SplunkHttp4EventProcessor;
 
@@ -61,7 +60,7 @@ public class DirectVmToSplunkRouteWithAlternateSchemeIT extends CamelTestSupport
     eventBuilder.setIndex("fuse-dev");
     eventBuilder.includeSystemProperty("karaf.name");
 
-    eventProcessor.setExchangeEventBuilder( eventBuilder);
+    eventProcessor.setSplunkEventBuilder( eventBuilder);
 
     builder.setSplunkEventProcessor( eventProcessor );
 

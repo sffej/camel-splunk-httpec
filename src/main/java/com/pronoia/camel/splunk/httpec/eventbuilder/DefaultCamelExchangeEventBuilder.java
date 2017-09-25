@@ -1,10 +1,14 @@
 package com.pronoia.camel.splunk.httpec.eventbuilder;
 
+import static com.pronoia.splunk.eventcollector.EventCollectorInfo.EVENT_BODY_KEY;
+
 import com.pronoia.splunk.eventcollector.EventBuilder;
+import com.pronoia.splunk.eventcollector.eventbuilder.EventBuilderSupport;
 import com.pronoia.splunk.eventcollector.eventbuilder.JacksonEventBuilderSupport;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -31,26 +35,33 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
   }
 
   @Override
-  protected void serializeFields(Map<String, Object> eventObject) {
-    if (hasEvent()) {
-      Exchange exchange = getEvent();
+  public String getTimestampFieldValue() {
+    if (hasEventBody()) {
+      Exchange exchange = getEventBody();
 
       Date timestamp = exchange.getProperty(Exchange.CREATED_TIMESTAMP, Date.class);
 
       if (timestamp != null) {
         setTimestamp(timestamp);
-      } else {
-        setTimestamp();
       }
+    }
+
+    return super.getTimestampFieldValue();
+  }
+
+  @Override
+  protected void addAdditionalFieldsToMap(Map<String, Object> map) {
+    if (hasEventBody()) {
+      Exchange exchange = getEventBody();
 
       if (includeExchangeProperties && propertiesAsFields) {
         Map<String, Object> exchangeProperties = exchange.getProperties();
         if (exchangeProperties != null && !exchangeProperties.isEmpty()) {
-          for (Map.Entry<String, Object> property : exchangeProperties.entrySet()) {
+          for (Map.Entry<String, Object> property : exchangeProperties.entrySet() ) {
             String propertyName = property.getKey();
             Object propertyValue = property.getValue();
             if (propertyValue != null && qualifyExchangePropertyValue(propertyName, propertyValue)) {
-              addField(propertyName, propertyValue.toString());
+              map.put(propertyName, propertyValue.toString());
             }
           }
         }
@@ -65,37 +76,35 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
             String headerName = header.getKey();
             Object headerValue = header.getValue();
             if (headerValue != null && qualifyMessageHeaderValue(headerName, headerValue)) {
-              addField(headerName, headerValue.toString());
+              map.put(headerName, headerValue.toString());
             }
           }
         }
       }
-    } else {
-      setTimestamp();
     }
 
-    super.serializeFields(eventObject);
+    super.addAdditionalFieldsToMap(map);
   }
 
   @Override
-  protected void serializeBody(Map<String, Object> eventObject) {
-    if (hasEvent()) {
-      Exchange exchange = getEvent();
+  protected void addEventBodyToMap(Map<String, Object> map) {
+    if (hasEventBody()) {
+      Exchange exchange = getEventBody();
       Message message = exchange.hasOut() ? exchange.getOut() : exchange.getIn();
 
       if (propertiesAsFields && headersAsFields) {
         if (includeBody) {
-          eventObject.put("event", message.getBody());
+          map.put(EVENT_BODY_KEY, message.getBody());
         } else {
-          eventObject.put("event", "[Camel Message Body was excluded]");
+          map.put(EVENT_BODY_KEY, "[Camel Message Body was excluded]");
         }
       } else {
-        Map<String, Object> camelEvent = new HashMap<>();
+        Map<String, Object> camelEvent = new LinkedHashMap<>();
 
         if (includeExchangeProperties && !propertiesAsFields) {
           Map<String, Object> exchangeProperties = exchange.getProperties();
           if (exchangeProperties != null && !exchangeProperties.isEmpty()) {
-            Map<String, Object> propertiesForEvent = new HashMap<>();
+            Map<String, Object> propertiesForEvent = new LinkedHashMap<>();
 
             for (Map.Entry<String, Object> property : exchangeProperties.entrySet()) {
               String propertyName = property.getKey();
@@ -112,7 +121,7 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
         if (includeMessageHeaders && !headersAsFields) {
           Map<String, Object> messageHeaders = message.getHeaders();
           if (messageHeaders != null && !messageHeaders.isEmpty()) {
-            Map<String, Object> headersForEvent = new HashMap<>();
+            Map<String, Object> headersForEvent = new LinkedHashMap<>();
 
             for (Map.Entry<String, Object> header : messageHeaders.entrySet()) {
               String headerName = header.getKey();
@@ -130,18 +139,9 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
           camelEvent.put("messageBody", message.getBody());
         }
 
-        eventObject.put("event", camelEvent);
+        map.put(EVENT_BODY_KEY, camelEvent);
       }
     }
-  }
-
-  @Override
-  public EventBuilder<Exchange> duplicate() {
-    DefaultCamelExchangeEventBuilder answer = new DefaultCamelExchangeEventBuilder();
-
-    answer.copyConfiguration(this);
-
-    return answer;
   }
 
   public boolean isIncludeExchangeProperties() {
@@ -166,6 +166,22 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
 
   public void setIncludeBody(boolean includeBody) {
     this.includeBody = includeBody;
+  }
+
+  public boolean isPropertiesAsFields() {
+    return propertiesAsFields;
+  }
+
+  public void setPropertiesAsFields(boolean propertiesAsFields) {
+    this.propertiesAsFields = propertiesAsFields;
+  }
+
+  public boolean isHeadersAsFields() {
+    return headersAsFields;
+  }
+
+  public void setHeadersAsFields(boolean headersAsFields) {
+    this.headersAsFields = headersAsFields;
   }
 
   public Pattern getExcludePropertyPattern() {
@@ -262,5 +278,35 @@ public class DefaultCamelExchangeEventBuilder extends JacksonEventBuilderSupport
     return answer;
   }
 
+  @Override
+  public EventBuilder<Exchange> duplicate() {
+    DefaultCamelExchangeEventBuilder answer = new DefaultCamelExchangeEventBuilder();
+
+    answer.copyConfiguration(this);
+
+    return answer;
+  }
+
+
+  @Override
+  protected void copyConfiguration(EventBuilderSupport<Exchange> sourceEventBuilder) {
+    super.copyConfiguration(sourceEventBuilder);
+
+    if (sourceEventBuilder instanceof DefaultCamelExchangeEventBuilder) {
+      DefaultCamelExchangeEventBuilder sourceDefaultCamelExchangeEventBuilder = (DefaultCamelExchangeEventBuilder)sourceEventBuilder;
+
+      this.includeExchangeProperties = sourceDefaultCamelExchangeEventBuilder.includeExchangeProperties;
+      this.includeMessageHeaders = sourceDefaultCamelExchangeEventBuilder.includeMessageHeaders;
+      this.includeBody = sourceDefaultCamelExchangeEventBuilder.includeBody;
+
+      this.propertiesAsFields = sourceDefaultCamelExchangeEventBuilder.propertiesAsFields;
+      this.headersAsFields = sourceDefaultCamelExchangeEventBuilder.headersAsFields;
+
+      this.excludePropertyPattern = sourceDefaultCamelExchangeEventBuilder.excludePropertyPattern;
+      this.includePropertyPattern = sourceDefaultCamelExchangeEventBuilder.includePropertyPattern;
+      this.excludeHeaderPattern = sourceDefaultCamelExchangeEventBuilder.excludeHeaderPattern;
+      this.includeHeaderPattern = sourceDefaultCamelExchangeEventBuilder.includeHeaderPattern;
+    }
+  }
 
 }

@@ -18,8 +18,8 @@
 
     <bean id="splunkHECRouteBuilderError"
           class="com.pronoia.camel.splunk.httpec.DirectVmToSplunkHttpEventCollectorRouteBuilder" init-method="configureHttps4">
-        <property name="splunkEventBuilder">
-            <bean class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilder">
+        <property name="splunkEventBuilderBean">
+            <bean class="com.pronoia.camel.splunk.httpec.bean.SplunkEventBuilderBean">
                 <property name="index" value="${error-splunk-index}"/>
                 <property name="source" value="${error-splunk-source}"/>
                 <property name="sourceType" value="${error-splunk-sourcetype}"/>

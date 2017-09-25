@@ -9,7 +9,6 @@ import com.pronoia.camel.splunk.httpec.eventbuilder.DefaultCamelExchangeEventBui
 import com.pronoia.camel.splunk.httpec.processor.SplunkHttp4EventProcessor;
 
 import org.apache.camel.EndpointInject;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -45,7 +44,7 @@ public class VmToSplunkRouteIT extends CamelTestSupport {
     eventBuilder.setSourcetype("test-sourcetype");
     eventBuilder.includeSystemProperty("karaf.name");
 
-    eventProcessor.setExchangeEventBuilder(eventBuilder);
+    eventProcessor.setSplunkEventBuilder(eventBuilder);
 
     builder.setSplunkEventProcessor(eventProcessor);
 
